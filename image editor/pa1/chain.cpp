@@ -1,82 +1,105 @@
-#include "chain.h"
-#include "chain_given.cpp"
+#include "block.h"
 #include <cmath>
 #include <iostream>
 
-// PA1 functions
-
-/**
- * Destroys the current Chain. This function should ensure that
- * memory does not leak on destruction of a chain.
- */
-Chain::~Chain()
+int Block::width() const
 {
-/* YOUR CODE HERE */
+return data.size();
 }
 
-/**
- * Inserts a new node at the back of the List.
- * This function **SHOULD** create a new ListNode.
- *
- * @param ndata The data to be inserted.
- */
-void Chain::insertBack(const Block &ndata)
+int Block::height() const
 {
-/* YOUR CODE HERE */
+return data[0].size();
 }
 
-
-/**
- * Swaps the two nodes at the indexes "node1" and "node2".
- * The indexes of the nodes are 1 based.
- * assumes i and j are valid (in {1,length_} inclusive)
- * 
- */
-void Chain::swap(int i, int j)
+void Block::render(PNG &im, int column, int row) const
 {
-/* YOUR CODE HERE */
+for ( int x = column; x < column + width(); x++){
+    for ( int y = row; y < row + height(); y++){
+        *im.getPixel(x,y) = data[x-column][y-row];
+    }
+}
 }
 
-/**
- * Reverses the chain
- */
-void Chain::reverse()
+void Block::build(PNG &im, int column, int row, int width, int height)
 {
 /* YOUR CODE HERE */
+// Make zero before if non-zero
+
+for ( int x = column; x < column + width; x++){
+    vector<RGBAPixel> y_block;
+    for ( int y = row; y < height+row; y++){
+        y_block.push_back(*im.getPixel(x,y));
+    }
+    data.push_back(y_block);
+}
 }
 
-/*
-* Modifies the current chain by "rotating" every k nodes by one position.
-* In every k node sub-chain, remove the first node, and place it in the last 
-* position of the sub-chain. If the last sub-chain has length less than k,
-* then don't change it at all. 
-* Some examples with the chain a b c d e:
-*   k = 1: a b c d e
-*   k = 2: b a d c e
-*   k = 3: b c a d e
-*   k = 4: b c d a e
-*/
-void Chain::rotate(int k)
-{
-/* YOUR CODE HERE */
+void Block::flipVert(){
+    // Iterates until top row is equal to or less than bottom
+    int top = 0;
+    int bottom = height()-1;
+
+    while (top < bottom){
+        for (int x = 0; x < width(); x++){
+            RGBAPixel temp = data[x][top];
+            data[x][top] = data[x][bottom];
+            data[x][bottom] = temp;
+        }
+
+        bottom--;
+        top++;    
+    }
 }
 
-/**
- * Destroys ALL dynamically allocated memory associated with the
- * current Chain class.
- */
-void Chain::clear()
+void Block::flipHoriz()
 {
-/* YOUR CODE HERE */
+    int left =0;
+    int right = width()-1;
+    while (left < right){
+            
+        for(int y = 0; y < height(); y++) {
+            RGBAPixel temp = data[left][y];
+            data[left][y] = data[right][y];
+            data[right][y] = temp;
+        }
+        
+        left++;
+        right--;
+    }
 }
 
-/* makes the current object into a copy of the parameter:
- * All member variables should have the same value as
- * those of other, but the memory should be completely
- * independent. This function is used in both the copy
- * constructor and the assignment operator for Chains.
- */
-void Chain::copy(Chain const &other)
+void Block::rotateRight()
 {
-/* YOUR CODE HERE */
+    
+    for(int x = 0; x < width(); x++){
+        for(int y = 0; y < height() ; y++){
+            cout << data[y][x];
+        }
+            cout << "." << endl;
+    }
+
+    int size = width()- 1;
+    for(int x = 0; x < width()/ 2; x++){
+     for(int y = x; y < size - x; y++){
+        // Stores the value of the current pixel
+        RGBAPixel temp = data[x][y];
+       
+       //Now loops around, shifting 90 degrees
+       data[x][y] = data[y][size - x];
+       data[y][size -x] = data[size - x][size - y];
+       data[size - x][size - y] = data[size -y][x];
+ 
+       data[size - y][x] = temp;
+     }
+   }
+
+    cout << "_______________" << endl;
+    for(int x = 0; x < width(); x++){
+        for(int y = 0; y < height() ; y++){
+            cout << data[y][x];
+        }
+        cout << "." << endl;
+    }
+
 }

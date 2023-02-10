@@ -1,4 +1,3 @@
-
 /**
  *
  * circular, Singly Linked List (PA 1)
@@ -114,6 +113,7 @@ private:
 
 
    /* =================== end of private PA1 functions ============== */
+
 };
 
 #endif
